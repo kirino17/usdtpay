@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>支付测试</title>
+</head>
+
+<body>
+    <div>
+        <p>商品名称：</p>
+        <input type="text" name="name" id="name" value="测试商品">
+        <p>商品描述：</p>
+        <input type="text" name="desc" id="desc" value="测试描述">
+        <p>商品快照：</p>
+        <input type="text" name="snaphsot" id="snaphsot" value="https://s3.bmp.ovh/imgs/2022/06/11/f6a40309b92868a6.png">
+        <p>支付金额：</p>
+        <input type="text" name="amount" id="amount" value="1">
+    </div>
+    <p>&nbsp;</p>
+    <div>
+        <button onclick="createPay()">拉起支付</button>&nbsp;
+        <button onclick="balanceOf()">查询余额</button>
+    </div>
+
+    <script>
+        function createPay() {
+            let name = document.getElementById('name').value;
+            let desc = document.getElementById('desc').value;
+            let snaphsot = document.getElementById('snaphsot').value;
+            let amount = document.getElementById('amount').value;
+
+            fetch('/createOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    desc: desc,
+                    snaphsot: snaphsot,
+                    amount: parseInt(amount)
+                })
+            }).then(res => res.json()).then(res => {
+                if (res.status) {
+                    window.open(res.data, '_blank');
+                } else {
+                    alert('创建支付订单失败!');
+                }
+            });
+        }
+
+        function balanceOf(){
+            fetch('/balance', {
+                method: 'GET',
+            }).then(res => res.json()).then(res => {
+                if (res.status) {
+                    alert('余额：' + res.data);
+                } else {
+                    alert('查询余额失败!');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
